@@ -1,13 +1,13 @@
-./weather/node_modules
-./weather/dist
-./weather/yarn.lock
+weather-app/node_modules/
+weather-app/dist/
+weather-app/yarn.lock
 
 *.log
 
-./weather/npm-debug.log*
-./weather/yarn-debug.log*
-./weather/yarn-error.log*
-./weather/pnpm-debug.log*
+weather-app/npm-debug.log*
+weather-app/yarn-debug.log*
+weather-app/yarn-error.log*
+weather-app/pnpm-debug.log*
 
 .idea
 .vscode
