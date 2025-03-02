@@ -60,7 +60,7 @@ weather-prototype.html      # 原型图
 
 1. 克隆仓库
 ```bash
-git clone <仓库地址>
+git clone https://github.com/luozijian1223/weather-app.git
 cd weather-app
 ```
 
