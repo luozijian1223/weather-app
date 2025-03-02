@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天气应用原型</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .prototype-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .screen {
+            width: 320px;
+            height: 640px;
+            background-color: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .screen-title {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #444;
+        }
+        
+        /* 状态栏 */
+        .status-bar {
+            height: 40px;
+            background-color: rgba(255,255,255,0.9);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 14px;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #eee;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            color: #888;
+        }
+        
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item.active {
+            color: #4a90e2;
+        }
+        
+        /* 主页样式 */
+        .home-screen {
+            background: linear-gradient(to bottom, #4a90e2, #87cefa);
+            color: white;
+        }
+        
+        .location-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            font-size: 18px;
+        }
+        
+        .location-bar i {
+            margin-right: 5px;
+        }
+        
+        .current-weather {
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        .temperature {
+            font-size: 72px;
+            font-weight: 200;
+            margin: 10px 0;
+        }
+        
+        .weather-condition {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .weather-details {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            margin: 0 15px;
+        }
+        
+        .detail-item {
+            text-align: center;
+        }
+        
+        .hourly-forecast {
+            margin: 20px 15px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 15px;
+        }
+        
+        .hourly-title {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .hourly-items {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .hourly-item {
+            flex: 0 0 auto;
+            text-align: center;
+            margin-right: 20px;
+        }
+        
+        .daily-forecast {
+            margin: 0 15px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 15px;
+        }
+        
+        .daily-title {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .daily-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        /* 详情页样式 */
+        .details-screen {
+            background: linear-gradient(to bottom, #4a90e2, #87cefa);
+            color: white;
+        }
+        
+        .details-header {
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .details-card {
+            margin: 15px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 15px;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .detail-grid-item {
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .detail-grid-item .value {
+            font-size: 24px;
+            margin: 5px 0;
+        }
+        
+        .chart-container {
+            height: 200px;
+            margin-top: 15px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 预报页样式 */
+        .forecast-screen {
+            background: linear-gradient(to bottom, #4a90e2, #87cefa);
+            color: white;
+        }
+        
+        .forecast-header {
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .forecast-day {
+            margin: 10px 15px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 15px;
+        }
+        
+        .forecast-date {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .forecast-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .temp-range {
+            display: flex;
+            align-items: center;
+        }
+        
+        .temp-bar {
+            width: 100px;
+            height: 6px;
+            background-color: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            margin: 0 10px;
+            position: relative;
+        }
+        
+        .temp-fill {
+            position: absolute;
+            height: 100%;
+            background-color: white;
+            border-radius: 3px;
+        }
+        
+        /* 位置管理页样式 */
+        .locations-screen {
+            background-color: white;
+        }
+        
+        .locations-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .location-list {
+            margin-top: 10px;
+        }
+        
+        .location-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .location-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .location-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .location-weather {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .location-temp {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .add-location {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #4a90e2;
+            color: white;
+            border-radius: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        /* 设置页样式 */
+        .settings-screen {
+            background-color: white;
+        }
+        
+        .settings-header {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .settings-group {
+            margin: 15px 0;
+        }
+        
+        .settings-group-title {
+            padding: 0 15px;
+            margin-bottom: 10px;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .settings-item {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .toggle {
+            width: 50px;
+            height: 30px;
+            background-color: #ddd;
+            border-radius: 15px;
+            position: relative;
+            transition: background-color 0.3s;
+        }
+        
+        .toggle.active {
+            background-color: #4a90e2;
+        }
+        
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background-color: white;
+            border-radius: 13px;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .toggle.active::after {
+            left: 22px;
+        }
+        
+        /* 提醒页样式 */
+        .alerts-screen {
+            background-color: white;
+        }
+        
+        .alerts-header {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .alert-item {
+            margin: 15px;
+            padding: 15px;
+            background-color: #fff9e6;
+            border-left: 4px solid #ffcc00;
+            border-radius: 5px;
+        }
+        
+        .alert-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .alert-time {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .alert-content {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .no-alerts {
+            text-align: center;
+            padding: 50px 0;
+            color: #888;
+        }
+        
+        .add-alert {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #4a90e2;
+            color: white;
+            border-radius: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <!-- 主页 -->
+        <div>
+            <div class="screen-title">主页</div>
+            <div class="screen home-screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <div>
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
+                </div>
+                
+                <div class="location-bar">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>北京市</span>
+                </div>
+                
+                <div class="current-weather">
+                    <i class="fas fa-sun" style="font-size: 64px;"></i>
+                    <div class="temperature">23°</div>
+                    <div class="weather-condition">晴朗</div>
+                    <div>最高 26° | 最低 18°</div>
+                </div>
+                
+                <div class="weather-details">
+                    <div class="detail-item">
+                        <div><i class="fas fa-wind"></i></div>
+                        <div>3 km/h</div>
+                        <div>风速</div>
+                    </div>
+                    <div class="detail-item">
+                        <div><i class="fas fa-tint"></i></div>
+                        <div>45%</div>
+                        <div>湿度</div>
+                    </div>
+                    <div class="detail-item">
+                        <div><i class="fas fa-sun"></i></div>
+                        <div>6:05</div>
+                        <div>日出</div>
+                    </div>
+                </div>
+                
+                <div class="hourly-forecast">
+                    <div class="hourly-title">小时预报</div>
+                    <div class="hourly-items">
+                        <div class="hourly-item">
+                            <div>现在</div>
+                            <div><i class="fas fa-sun"></i></div>
+                            <div>23°</div>
+                        </div>
+                        <div class="hourly-item">
+                            <div>11时</div>
+                            <div><i class="fas fa-sun"></i></div>
+                            <div>24°</div>
+                        </div>
+                        <div class="hourly-item">
+                            <div>12时</div>
+                            <div><i class="fas fa-sun"></i></div>
+                            <div>25°</div>
+                        </div>
+                        <div class="hourly-item">
+                            <div>13时</div>
+                            <div><i class="fas fa-sun"></i></div>
+                            <div>26°</div>
+                        </div>
+                        <div class="hourly-item">
+                            <div>14时</div>
+                            <div><i class="fas fa-cloud-sun"></i></div>
+                            <div>26°</div>
+                        </div>
+                        <div class="hourly-item">
+                            <div>15时</div>
+                            <div><i class="fas fa-cloud-sun"></i></div>
+                            <div>25°</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="daily-forecast">
+                    <div class="daily-title">7天预报</div>
+                    <div class="daily-item">
+                        <div>今天</div>
+                        <div><i class="fas fa-sun"></i></div>
+                        <div>18° / 26°</div>
+                    </div>
+                    <div class="daily-item">
+                        <div>明天</div>
+                        <div><i class="fas fa-cloud-sun"></i></div>
+                        <div>17° / 25°</div>
+                    </div>
+                    <div class="daily-item">
+                        <div>周三</div>
+                        <div><i class="fas fa-cloud"></i></div>
+                        <div>16° / 23°</div>
+                    </div>
+                </div>
+                
+                <div class="bottom-nav">
+                    <div class="nav-item active">
+                        <i class="fas fa-home"></i>
+                        <span>主页</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-list"></i>
+                        <span>预报</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>位置</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>设置</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 详情页 -->
+        <div>
+            <div class="screen-title">详情页</div>
+            <div class="screen details-screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <div>
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
+                </div>
+                
+                <div class="details-header">
+                    <h2>天气详情</h2>
+                    <div>北京市 · 今天</div>
+                </div>
+                
+                <div class="details-card">
+                    <div class="details-grid">
+                        <div class="detail-grid-item">
+                            <div>体感温度</div>
+                            <div class="value">24°</div>
+                        </div>
+                        <div class="detail-grid-item">
+                            <div>湿度</div>
+                            <div class="value">45%</div>
+                        </div>
+                        <div class="detail-grid-item">
+                            <div>风速</div>
+                            <div class="value">3 km/h</div>
+                        </div>
+                        <div class="detail-grid-item">
+                            <div>气压</div>
+                            <div class="value">1013 hPa</div>
+                        </div>
+                        <div class="detail-grid-item">
+                            <div>能见度</div>
+                            <div class="value">10 km</div>
+                        </div>
+                        <div class="detail-grid-item">
+                            <div>紫外线指数</div>
+                            <div class="value">6</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="details-card">
+                    <div>温度变化</div>
+                    <div class="chart-container">
+                        <i class="fas fa-chart-line" style="font-size: 48px; opacity: 0.5;"></i>
+                    </div>
+                </div>
+                
+                <div class="details-card">
+                    <div>生活建议</div>
+                    <div style="margin-top: 10px;">
+                        <div style="margin-bottom: 10px;">
+                            <div><i class="fas fa-tshirt"></i> 穿衣指数</div>
+                            <div style="font-size: 14px; margin-top: 5px;">天气温暖，建议穿着轻薄的衣物。</div>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <div><i class="fas fa-running"></i> 运动指数</div>
+                            <div style="font-size: 14px; margin-top: 5px;">天气适宜，是户外运动的好时机。</div>
+                        </div>
+                        <div>
+                            <div><i class="fas fa-car"></i> 出行指数</div>
+                            <div style="font-size: 14px; margin-top: 5px;">天气良好，适合外出活动。</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bottom-nav">
+                    <div class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>主页</span>
+                    </div>
+                    <div class="nav-item active">
+                        <i class="fas fa-list"></i>
+                        <span>预报</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>位置</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>设置</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 预报页 -->
+        <div>
+            <div class="screen-title">预报页</div>
+            <div class="screen forecast-screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <div>
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
+                </div>
+                
+                <div class="forecast-header">
+                    <h2>7天预报</h2>
+                    <div>北京市</div>
+                </div>
+                
+                <div class="forecast-day">
+                    <div class="forecast-date">今天 - 5月15日</div>
+                    <div class="forecast-details">
+                        <div><i class="fas fa-sun"></i></div>
+                        <div class="temp-range">
+                            <span>18°</span>
+                            <div class="temp-bar">
+                                <div class="temp-fill" style="width: 80%; left: 20%;"></div>
+                            </div>
+                            <span>26°</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 14px;">
+                        晴朗，微风，湿度45%
+                    </div>
+                </div>
+                
+                <div class="forecast-day">
+                    <div class="forecast-date">明天 - 5月16日</div>
+                    <div class="forecast-details">
+                        <div><i class="fas fa-cloud-sun"></i></div>
+                        <div class="temp-range">
+                            <span>17°</span>
+                            <div class="temp-bar">
+                                <div class="temp-fill" style="width: 75%; left: 25%;"></div>
+                            </div>
+                            <span>25°</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 14px;">
+                        多云间晴，微风，湿度50%
+                    </div>
+                </div>
+                
+                <div class="forecast-day">
+                    <div class="forecast-date">周三 - 5月17日</div>
+                    <div class="forecast-details">
+                        <div><i class="fas fa-cloud"></i></div>
+                        <div class="temp-range">
+                            <span>16°</span>
+                            <div class="temp-bar">
+                                <div class="temp-fill" style="width: 70%; left: 30%;"></div>
+                            </div>
+                            <span>23°</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 14px;">
+                        多云，微风，湿度55%
+                    </div>
+                </div>
+                
+                <div class="forecast-day">
+                    <div class="forecast-date">周四 - 5月18日</div>
+                    <div class="forecast-details">
+                        <div><i class="fas fa-cloud-showers-heavy"></i></div>
+                        <div class="temp-range">
+                            <span>15°</span>
+                            <div class="temp-bar">
+                                <div class="temp-fill" style="width: 65%; left: 35%;"></div>
+                            </div>
+                            <span>22°</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 14px;">
+                        阵雨，微风，湿度65%
+                    </div>
+                </div>
+                
+                <div class="forecast-day">
+                    <div class="forecast-date">周五 - 5月19日</div>
+                    <div class="forecast-details">
+                        <div><i class="fas fa-cloud-rain"></i></div>
+                        <div class="temp-range">
+                            <span>14°</span>
+                            <div class="temp-bar">
+                                <div class="temp-fill" style="width: 60%; left: 40%;"></div>
+                            </div>
+                            <span>20°</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 14px;">
+                        小雨，微风，湿度70%
+                    </div>
+                </div>
+                
+                <div class="bottom-nav">
+                    <div class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>主页</span>
+                    </div>
+                    <div class="nav-item active">
+                        <i class="fas fa-list"></i>
+                        <span>预报</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>位置</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>设置</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 位置管理页 -->
+        <div>
+            <div class="screen-title">位置管理</div>
+            <div class="screen locations-screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <div>
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
+                </div>
+                
+                <div class="locations-header">
+                    <h2>我的位置</h2>
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+                
+                <div class="location-list">
+                    <div class="location-item">
+                        <div class="location-info">
+                            <div class="location-name">北京市 <i class="fas fa-map-marker-alt" style="color: #4a90e2;"></i></div>
+                            <div class="location-weather">晴朗</div>
+                        </div>
+                        <div class="location-temp">23°</div>
+                    </div>
+                    
+                    <div class="location-item">
+                        <div class="location-info">
+                            <div class="location-name">上海市</div>
+                            <div class="location-weather">多云</div>
+                        </div>
+                        <div class="location-temp">25°</div>
+                    </div>
+
+                    <div class="location-item">
+                        <div class="location-info">
+                            <div class="location-name">广州市</div>
+                            <div class="location-weather">小雨</div>
+                        </div>
+                        <div class="location-temp">28°</div>
+                    </div>
+                    
+                    <div class="location-item">
+                        <div class="location-info">
+                            <div class="location-name">深圳市</div>
+                            <div class="location-weather">阵雨</div>
+                        </div>
+                        <div class="location-temp">27°</div>
+                    </div>
+                    
+                    <div class="location-item">
+                        <div class="location-info">
+                            <div class="location-name">成都市</div>
+                            <div class="location-weather">多云</div>
+                        </div>
+                        <div class="location-temp">22°</div>
+                    </div>
+                </div>
+                
+                <div class="add-location">
+                    <i class="fas fa-plus"></i>
+                </div>
+                
+                <div class="bottom-nav">
+                    <div class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>主页</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-list"></i>
+                        <span>预报</span>
+                    </div>
+                    <div class="nav-item active">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>位置</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>设置</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 设置页 -->
+        <div>
+            <div class="screen-title">设置</div>
+            <div class="screen settings-screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <div>
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
+                </div>
+                
+                <div class="settings-header">
+                    <h2>设置</h2>
+                </div>
+                
+                <div class="settings-group">
+                    <div class="settings-group-title">通用设置</div>
+                    
+                    <div class="settings-item">
+                        <div>温度单位</div>
+                        <div>摄氏度 (°C)</div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>风速单位</div>
+                        <div>km/h</div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>时间格式</div>
+                        <div>24小时制</div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>距离单位</div>
+                        <div>公里 (km)</div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <div class="settings-group-title">通知设置</div>
+                    
+                    <div class="settings-item">
+                        <div>天气提醒</div>
+                        <div class="toggle active"></div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>每日天气预报</div>
+                        <div class="toggle active"></div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>异常天气警报</div>
+                        <div class="toggle active"></div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <div class="settings-group-title">应用设置</div>
+                    
+                    <div class="settings-item">
+                        <div>自动更新</div>
+                        <div class="toggle active"></div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>后台刷新</div>
+                        <div class="toggle active"></div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>数据来源</div>
+                        <div>气象局</div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <div class="settings-group-title">关于</div>
+                    
+                    <div class="settings-item">
+                        <div>版本</div>
+                        <div>1.0.0</div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>隐私政策</div>
+                        <div><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>用户协议</div>
+                        <div><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                </div>
+                
+                <div class="bottom-nav">
+                    <div class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>主页</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-list"></i>
+                        <span>预报</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>位置</span>
+                    </div>
+                    <div class="nav-item active">
+                        <i class="fas fa-cog"></i>
+                        <span>设置</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 天气提醒页 -->
+        <div>
+            <div class="screen-title">天气提醒</div>
+            <div class="screen alerts-screen">
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <div>
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <i class="fas fa-battery-full"></i>
+                    </div>
+                </div>
+                
+                <div class="alerts-header">
+                    <h2>天气提醒</h2>
+                </div>
+                
+                <div class="alert-item">
+                    <div class="alert-title">
+                        <span>强降雨预警</span>
+                        <span class="alert-time">今天 14:30</span>
+                    </div>
+                    <div class="alert-content">
+                        预计今天下午将有强降雨，请注意防范可能引发的山洪、滑坡、泥石流等灾害。
+                    </div>
+                </div>
+                
+                <div class="alert-item">
+                    <div class="alert-title">
+                        <span>高温预警</span>
+                        <span class="alert-time">明天 08:00</span>
+                    </div>
+                    <div class="alert-content">
+                        预计明天最高气温将达到35℃以上，请注意防暑降温，避免长时间户外活动。
+                    </div>
+                </div>
+                
+                <div class="alert-item">
+                    <div class="alert-title">
+                        <span>空气质量提醒</span>
+                        <span class="alert-time">今天 07:00</span>
+                    </div>
+                    <div class="alert-content">
+                        今日空气质量良好，适合户外活动。
+                    </div>
+                </div>
+                
+                <div class="add-alert">
+                    <i class="fas fa-plus"></i>
+                </div>
+                
+                <div class="bottom-nav">
+                    <div class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>主页</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-list"></i>
+                        <span>预报</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>位置</span>
+                    </div>
+                    <div class="nav-item active">
+                        <i class="fas fa-cog"></i>
+                        <span>设置</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 简单的交互效果
+        document.querySelectorAll('.toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+./weather/node_modules
+./weather/dist
+./weather/yarn.lock
+
+*.log
+
+./weather/npm-debug.log*
+./weather/yarn-debug.log*
+./weather/yarn-error.log*
+./weather/pnpm-debug.log*
+
+.idea
+.vscode
+
